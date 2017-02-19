@@ -27,6 +27,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <hexString.h>
 
 #ifdef __MINGW32__
 #include <winsock2.h>
@@ -74,12 +76,14 @@ int main(int argc, char *argv[])
 	name = argv[0];
 
 	set_options(argc, argv);
+	printf("\n%s tcptunnel: Valid Options Read", get_current_timestamp());
 
 	if (build_server() == 1)
 	{
 		exit(1);
 	}
-
+	printf("\n%s tcptunnel: Server Built\n", get_current_timestamp());
+	
 #ifndef __MINGW32__
 	signal(SIGCHLD, SIG_IGN);
 #endif
@@ -255,7 +259,7 @@ int build_server(void)
 		perror("build_server: listen()");
 		return 1;
 	}
-
+	
 	return 0;
 }
 
@@ -283,7 +287,7 @@ int wait_for_clients(void)
 	{
 		if (settings.log)
 		{
-			printf("> %s tcptunnel: refused request from %s\n", get_current_timestamp(), inet_ntoa(rc.client_addr.sin_addr));
+			printf("\n%s tcptunnel: refused request from %s\n", get_current_timestamp(), inet_ntoa(rc.client_addr.sin_addr));
 		}
 		close(rc.client_socket);
 		return 1;
@@ -291,7 +295,7 @@ int wait_for_clients(void)
 
 	if (settings.log)
 	{
-		printf("> %s tcptunnel: request from %s\n", get_current_timestamp(), inet_ntoa(rc.client_addr.sin_addr));
+		printf("\n%s tcptunnel: request from %s\n", get_current_timestamp(), inet_ntoa(rc.client_addr.sin_addr));
 	}
 
 	return 0;
@@ -364,6 +368,8 @@ int use_tunnel(void)
 {
 	fd_set io;
 	char buffer[options.buffer_size];
+	char hexBuffer[options.buffer_size];
+	uint8_t holder[options.buffer_size];
 
 	for (;;)
 	{
@@ -372,6 +378,7 @@ int use_tunnel(void)
 		FD_SET(rc.remote_socket, &io);
 
 		memset(buffer, 0, sizeof(buffer));
+		memset(hexBuffer, 0, sizeof(hexBuffer));
 
 		if (select(fd(), &io, NULL, NULL, NULL) < 0)
 		{
@@ -397,12 +404,17 @@ int use_tunnel(void)
 				return 0;
 			}
 
-			send(rc.remote_socket, buffer, count, 0);
+			memcpy( holder, hexStringToBytes(buffer), count*sizeof *buffer);
+			memcpy( hexBuffer, holder, count/2);
+			
+			send(rc.remote_socket, hexBuffer, count/2, 0);
 
 			if (settings.log)
 			{
-				printf("> %s > ", get_current_timestamp());
+				printf("\n%s A> ", get_current_timestamp());
 				fwrite(buffer, sizeof(char), count, stdout);
+				printf("\n%s H> ", get_current_timestamp());
+				fwrite(hexBuffer, sizeof(char), count/2, stdout);
 				fflush(stdout);
 			}
 		}
@@ -425,11 +437,17 @@ int use_tunnel(void)
 				return 0;
 			}
 
-			send(rc.client_socket, buffer, count, 0);
+			memcpy( holder, buffer, count);
+			memcpy( hexBuffer, bytesToHexString(holder, count), (2*count)*sizeof *holder);
+			
+			send(rc.client_socket, hexBuffer, sizeof(hexBuffer), 0);
 
 			if (settings.log)
 			{
+				printf("\n%s A< ", get_current_timestamp());
 				fwrite(buffer, sizeof(char), count, stdout);
+				printf("\n%s H< ", get_current_timestamp());
+				fwrite(hexBuffer, sizeof(char), count*2, stdout);
 				fflush(stdout);
 			}
 		}
