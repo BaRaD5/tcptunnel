@@ -1,6 +1,6 @@
 # tcptunnel [![Build Status](https://api.travis-ci.org/vakuum/tcptunnel.png?branch=master)](https://travis-ci.org/vakuum/tcptunnel)
 
-Tcptunnel is a simple TCP port forwarder. Please see http://www.vakuumverpackt.de/tcptunnel/ for details and binary downloads.
+Tcptunnel is a simple TCP port forwarder. Please see http://www.vakuumverpackt.de/tcptunnel/ for original details.
 
 ## Help
 
@@ -28,7 +28,7 @@ Options:
 ### For Unix
 
 ```
-$ git clone https://github.com/vakuum/tcptunnel.git
+$ git clone https://github.com/ph4r/tcptunnel
 $ cd tcptunnel
 $ ./configure
 $ make
@@ -44,7 +44,7 @@ You will need the [Command Line Tools for Xcode](https://developer.apple.com/xco
 $ uname -mrs
 Darwin 12.5.0 x86_64
 
-$ git clone https://github.com/vakuum/tcptunnel.git
+$ git clone https://github.com/ph4r/tcptunnel
 $ cd tcptunnel
 $ ./configure --prefix=/usr/bin
 $ make
@@ -86,7 +86,7 @@ You will need the Cygwin environment for Windows from http://www.cygwin.com/ wit
 $ uname -a
 CYGWIN_NT-6.1-WOW64 computer 1.7.25(0.270/5/3) 2013-08-31 20:39 i686 Cygwin
 
-$ git clone git://github.com/vakuum/tcptunnel.git
+$ git clone https://github.com/ph4r/tcptunnel
 $ cd tcptunnel
 $ ./configure
 $ make
@@ -106,7 +106,7 @@ You will need MinGW32 to cross-compile tcptunnel. Please see http://www.mingw.or
 
 ```
 $ apt-get install mingw32 mingw32-binutils mingw32-runtime
-$ git clone https://github.com/vakuum/tcptunnel.git
+$ git clone https://github.com/ph4r/tcptunnel
 $ cd tcptunnel
 $ ./configure
 $ make -f Makefile.MinGW32
